@@ -1,0 +1,14 @@
+***********************************************  
+* ADDITIONAL MENU CONFIGURATION FILE STRUCTURE *
+************************************************
+
+line        1 byte            1 byte                  1 byte               1 byte               1 byte
+  1  [CustomMenuRecordsNo][PhoneBookMenuEnabled][LastDialedMenuEnabled][CallbackMenuEnabled][CustomMenuEnabled]
+     
+  where values for the entries are:
+  - CustomMenuRecordsNo: Number of Custom menus
+  - PhoneBookMenuEnabled: 1-enabled, 0-disabled
+  - LastDialedMenuEnabled: 1-enabled, 0-disabled
+  - CallbackMenuEnabled: 1-always enabled, 0-always disabled, 2-enabled only if there is no Call Control support
+  - CustomMenuEnabled: 1-enabled, 0-disabled
+ 

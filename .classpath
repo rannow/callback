@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<classpath>
+	<classpathentry kind="var" path="MUGEL_HOME/cards/Sim Card R5/cardsimulator/gse_Sim_Card_R5.jar"/>
+	<classpathentry kind="var" path="MUGEL_HOME/lib/gemaltoprovider.jar"/>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/libinterface"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/staticlibs"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/toolkitlibs"/>
+	<classpathentry kind="output" path="classes"/>
+</classpath>

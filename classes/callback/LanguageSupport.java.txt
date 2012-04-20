@@ -1,0 +1,109 @@
+package callback;
+
+import javacard.framework.Shareable;
+
+public interface LanguageSupport {
+
+  /** Language File ID - Deutsch */
+  public final static short LANGUAGE_FILE_ID_DE = (short) 0x6B00;
+  /** Language File ID - English */
+  public final static short LANGUAGE_FILE_ID_EN = (short) 0x6B01;
+  /** Language File ID - French */
+  public final static short LANGUAGE_FILE_ID_FR = (short) 0x6B03;
+  /** Language File ID - Spanish */
+  public final static short LANGUAGE_FILE_ID_ES = (short) 0x6B04;
+  /** Language File ID - Italian */
+  public final static short LANGUAGE_FILE_ID_IT = (short) 0x6B07;
+  /** Language File ID - Czech */
+  public final static short LANGUAGE_FILE_ID_CZ = (short) 0x6B08;
+  /** Language File ID - Dutch */
+  public final static short LANGUAGE_FILE_ID_DU = (short) 0x6B09;
+  /** Language File ID - Russian */
+  public final static short LANGUAGE_FILE_ID_RU = (short) 0x6B23;
+
+  /**
+   * Reads a text with the given number and stores it in the given destination
+   * array starting from given destination offset.;
+   * 
+   * @param textNo
+   *          text number in the ordered list stored in language file, starting
+   *          from 1.
+   * @param dest
+   *          destination array
+   * @param destOffset
+   *          destination array offset.
+   * @return text length.
+   * @throws LanguageException
+   *           if the text with the given number could not be read from the
+   *           language file or set the setLanguage() method was not yet invoked
+   *           nor there is not a default value for given text. This exception
+   *           will also be thrown if the requested text number is invalid.
+   * @see #setLanguage(byte[])
+   */
+  public short readText(short textNo, byte[] dest, short destOffset) throws LanguageException;
+
+  /**
+   * This method checks if a file with id defined by
+   * {@link #FILE_ID_LANGUAGES_CONFIG} variable exist. If the file exist,
+   * then number of maximum texts in particular language file is obtained (second byte). If
+   * the file does not exist, then method returns the default value defined by
+   * {@link #DEFAULT_LANG_RECORDS_IN_LANG_FILE}.
+   * 
+   * @return max number of texts.
+   * @throws LanguageException if configuration file exists but for some reasons it is unreadable. 
+   */
+  public short getNumberOfTexts() throws LanguageException;
+
+  /**
+   * This method checks if a file with id defined by
+   * {@link #FILE_ID_LANGUAGES_CONFIG} variable exist. If the file exist,
+   * then number of available languages is obtained (first byte). If
+   * the file does not exist, then method returns the default value defined by
+   * {@link #DEFAULT_NUMBER_OF_LANGUAGES}.
+   * 
+   * @return number of lang files.
+   * @throws LanguageException in case if the error occured during accesing the lang config file.
+   */
+  public short getNumberOfLanguages() throws LanguageException;
+
+  /**
+   * Sets the language to be used for opening the appropriate file with texts.
+   * 
+   * @param languageId language identifier i.e language file id on the SIM card.
+   * @throws LanguageException if the language file for the given id does not exist.
+   */
+  public void setLanguage(short languageId) throws LanguageException;
+
+  /**
+   * This method looks for a language title.
+   * The title is obtained from a particular language file - this file is obtained using file {@link #FILE_ID_AVAILABLE_LANGUAGES}.
+   * <br/>
+   * NOTE: This method uses {@link #setLanguage(short)} and {@link #readText(short)} methods.
+   * 
+   * @param langNo language number starting from 1.
+   * @param dest destination array
+   * @param destOffset destination array offset. 
+   * @return text length. 
+   * @throws LanguageException 
+   *       <ul>
+   *        <li>if the language with given number is unavailable (i.e. langNo <=0 || langNo > maxLanguagesNo). CODE_LANGUAGE_UNAVAILABLE will be thrown as reason then.
+   *        <li>Because the language title is obtained from particular language file, then this exception will be also thrown if reading the file fails for some reasons.
+   *       </ul> 
+   * @see #setLanguage(short)
+   * @see #readText(short)           
+   */
+  public short readLanguageTitle(short langNo, byte[] dest, short destOffset) throws LanguageException;
+
+  /**
+   * This method looks for a language Identifier (= language file id).
+   * The identifier is obtained using file {@link #FILE_ID_AVAILABLE_LANGUAGES}.
+   * 
+   * @param langNo language number starting from 1.
+   * @return language file identifier.
+   * @throws LanguageException if the language with given number is unavailable (i.e. langNo <=0 || langNo > maxLanguagesNo)
+   * @see #setLanguage(short)
+   * @see #readText(short)  
+   */
+  public short getLanguageId(short langNo) throws LanguageException;
+
+}

@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<?xml-stylesheet href="GDPtoHTML.xsl" type="text/xsl"?>
+
+<JCProject>
+  <!-- This section will defined the specific smart card type -->
+  <Card Name="Sim Card R5"/>
+  <!-- This section will defined the output file paths of the Project -->
+  <Path ClassDir="./classes" ConversionDir="./oncard"/>
+  <Version Major="2" Minor="0"/>
+  <!-- This section will defined all the properties of the Application loaded on the smart card -->
+  <Application Label="This is a Gemplus example" Name="callback">
+    <!-- You can customize the properties of this Package or add another here -->
+    <Package Aid="A0000000185000000000000052414451" DapAlgoName="" DapSecretKey="" EepromSize="FFFF" FileSize="FFFF" LoadToken="" Name="callback" RamSize="FFFF" SecurityDomainAid=""/>
+    <Applet Aid="A0000000185000000000000052414441" ClassName="CallbackApplet" Index="1">
+      <!--If you add another Applet, you should increase his Index number-->
+      <Instance Aid="A0000000185000000000000052414441" ApplicationSpecificParameters="" EepromSize="FFFF" Index="1" InstallToken="" Privilege="00" RamSize="FFFF">
+        <!--If you add another Instance, you should increase his Index number-->
+        <GSMParameter MaxNumberOfMenuEntries="08" Menus="00010002000300040005000600070008" PriorityLevel="FF" TextMaxLength="25" TimerMaxNumber="00">
+          <!--You can customize the GSM parameters of this Instance here-->
+        </GSMParameter>
+        <SIMAccessParameter AccessDomainData="" AccessDomainParameter="00">
+          <!--You can customize the SIM Access parameters of this Instance here-->
+        </SIMAccessParameter>
+      </Instance>
+    </Applet>
+  </Application>
+<ExportPath>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<Path Index="1" Value="W:\workspace.simtoolkit\staticlibs\oncard"/>
+<Path Index="2" Value="W:\workspace.simtoolkit\libinterface\oncard"/>
+<Path Index="3" Value="W:\workspace.simtoolkit\toolkitlibs\oncard"/>
+</ExportPath>
+</JCProject>

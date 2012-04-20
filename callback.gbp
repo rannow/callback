@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- ================================================================== -->
+<!-- Java Card Project                                                  -->
+<!-- ================================================================== -->
+<project basedir="." default="all" name="callback">
+  <description>This file is a Java Card Project Sample provided by Gemplus</description>
+  <target depends="HexFile, LdrFile, GemshellScriptGenerator" name="all"/>
+  <target name="init">
+    <!-- Load Java Card tasks of the Gemplus Developement Tool Core -->
+    <path id="javacardanttasks-core">
+      <fileset dir="${Mugel.Home}/lib/ant">
+        <include name="*.jar"/>
+      </fileset>
+    </path>
+    <taskdef classpathref="javacardanttasks-core" resource="resources/tasksCore.properties"/>
+    <!-- Create Ant property and index them if they are multiple -->
+    <xmlindexedproperty collapseAttributes="true" file="callback.gdp" keeproot="true"/>
+    <!-- Compute the location of the CAP file to create -->
+    <localizecapfile dir="${JCProject.Path.ConversionDir}" pkgname="${JCProject.Application.Package.Name}" property="JCProject.Path.CapFile"/>
+    <!-- Load Java Card tasks for a specific card -->
+    <path id="javacardanttasks-cards">
+      <fileset dir="${Mugel.Home}/cards/${JCProject.Card.Name}/lib">
+        <include name="ant/**.jar"/>
+        <include name="jctools/**.jar"/>
+      </fileset>
+    </path>
+    <!-- ********************************************************************** -->
+    <!--   1) Validate the properties.                                          -->
+    <!--   2) Set default values for non-existing properties                    -->
+    <!-- ********************************************************************** -->
+    <taskdef classname="com.gemalto.tools.ant.jcbt.PropertiesCheck" classpath="${Mugel.Home}/lib/ant/jcbt/JCBuildToolAntTask.jar" name="PropertiesCheck"/>
+    <PropertiesCheck/>
+    <taskdef classpathref="javacardanttasks-cards" resource="resources/tasksCards.properties"/>
+  </target>
+  <!-- ================================================================== -->
+  <!-- Conversion                                                         -->
+  <!-- ================================================================== -->
+  <target depends="init,clean" name="jcconvert">
+    <!-- Generate JAR file with the default underlying converter (SUN Converter) -->
+    <jcconverter classdir="${JCProject.Path.ClassDir}" nobanner="yes" nowarn="no" out="CAP JCA EXP" outputdir="${JCProject.Path.ConversionDir}" outputfileproperty="conversion.outputfile" pkgaid="${JCProject.Application.Package.Aid}" pkgname="${JCProject.Application.Package.Name}" pkgversion="${JCProject.Version.Major}.${JCProject.Version.Minor}" verbose="no">
+      <exportpath dir="${Mugel.Home}/cards/${JCProject.Card.Name}">
+        <include name="resources/exportfiles"/>
+      </exportpath>
+      <converterpath dir="${Mugel.Home}/cards/${JCProject.Card.Name}/lib/jctools">
+        <include name="**/*.jar"/>
+      </converterpath>
+      <applet aid="${JCProject.Application.Applet.1.Aid}" classname="${JCProject.Application.Applet.1.ClassName}"/>
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<exportpath dir="${JCProject.ExportPath.Path.3.Value}"/>
+<exportpath dir="${JCProject.ExportPath.Path.2.Value}"/>
+<exportpath dir="${JCProject.ExportPath.Path.1.Value}"/>
+</jcconverter>
+    <!-- Generate SAP file intended for the card simulator -->
+    <sapconverter classdir="${JCProject.Path.ClassDir}" outputdir="${JCProject.Path.ConversionDir}" pkgaid="${JCProject.Application.Package.Aid}" pkgname="${JCProject.Application.Package.Name}">
+      <applet aid="${JCProject.Application.Applet.1.Aid}" classname="${JCProject.Application.Applet.1.ClassName}"/>
+    </sapconverter>
+    <!-- Generate binary file, it is loaded as it is to the card -->
+    <jar2cap jarfile="${conversion.outputfile}.jar"/>
+    <!-- Generate binary file removing descriptor component and
+             debug component, it is loaded as it is to the card      -->
+    <jar2ijc jarfile="${conversion.outputfile}.jar"/>
+  </target>
+  <!-- Convert the JAR file to a HEX file -->
+  <target depends="init,jcconvert" description="Create HEX file" name="HexFile">
+    <java classname="com.gemalto.ds.ant.jcbt.JarToHex">
+      <classpath>
+        <pathelement location="${Mugel.Home}/lib/ant/jcbt/jcbtAdaptor.jar"/>
+      </classpath>
+      <arg value="${conversion.outputfile}.jar"/>
+      <arg value="${conversion.outputfile}.hex"/>
+    </java>
+  </target>
+  <!-- Adapte properties for the JCBuildTool -->
+  <target depends="init,jcconvert" name="XmlPropertyReader">
+    <taskdef classname="com.gemalto.ds.ant.jcbt.XmlAntPropertyReader" classpath="${Mugel.Home}/lib/ant/jcbt/jcbtAdaptor.jar" name="XmlPropertyReader"/>
+    <XmlPropertyReader/>
+  </target>
+  <!-- Create .install file -->
+  <target depends="init, jcconvert, XmlPropertyReader" name="CreateInstallFile">
+    <echo message="--- Creating .install file ---"/>
+    <!-- Build .install file for loading applet into Simera cards, Specific Ant task -->
+    <taskdef classname="com.gemalto.ds.ant.jcbt.CreateInstallFile" classpath="${Mugel.Home}/lib/ant/jcbt/JCBuildToolAntTask.jar;${Mugel.Home}/lib/ant/jcbt/jcbtAdaptor.jar" name="GenInstallFileTask"/>
+    <GenInstallFileTask/>
+    <echo file="${conversion.outputfile}.install" message="${InstallFileContent}"/>
+  </target>
+  <!-- Convert an IJC file to a LDR file -->
+  <target depends="init, jcconvert, CreateInstallFile" description="Create LDR file" name="LdrFile">
+    <echo message="--- Creating LDR install files ---"/>
+    <copy file="${conversion.outputfile}.install" tofile="${conversion.outputfile}.par"/>
+    <condition else="" property="ijc2ldr.param" value="-install">
+      <isset property="JCProject.Application.Applet.1.Instance.1.Aid"/>
+    </condition>
+    <java classname="com.gemalto.ds.ant.jcbt.IjcToLdr">
+      <classpath>
+        <pathelement location="${Mugel.Home}/lib/ant/jcbt/ijc2ldr.jar"/>
+        <pathelement location="${Mugel.Home}/lib/ant/jcbt/jcbtAdaptor.jar"/>
+      </classpath>
+      <arg value="-lop"/>
+      <arg value="${ijc2ldr.param}"/>
+      <arg value="${conversion.outputfile}.ijc"/>
+    </java>
+    <delete file="${conversion.outputfile}.par"/>
+  </target>
+  <!-- Generate gemshell script -->
+  <target depends="init, jcconvert, HexFile" name="GemshellScriptGenerator">
+    <taskdef classname="com.gemalto.ds.ant.jcbt.GemshellScriptGenerator" classpath="${Mugel.Home}/lib/ant/jcbt/jcbtAdaptor.jar" name="GemshellScriptGenerator"/>
+    <GemshellScriptGenerator/>
+  </target>
+  <!-- ================================================================== -->
+  <!-- Clean                                                         -->
+  <!-- ================================================================== -->
+  <target depends="init" name="clean">
+    <delete dir="${JCProject.Path.ConversionDir}"/>
+  </target>
+</project>

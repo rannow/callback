@@ -1,0 +1,9 @@
+****************************************************  
+* ADDITIONAL LANGUAGE CONFIGURATION FILE STRUCTURE *
+****************************************************  
+line      1 byte        1 byte            
+  1  [LanguagesNo][LanguageTextsNo]
+
+  where values for the entries are:
+  - LanguagesNo: nr of all languages
+  - LanguageTextsNo: nr of texts is a language file. 

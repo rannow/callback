@@ -1,0 +1,155 @@
+package callback;
+
+/**
+ * Defines language text constants. <p/> 
+ * 
+ * Created on: 2008-10-26 <b/>
+ * 
+ * @author Artur Witek
+ */
+public interface LanguageTexts {
+  
+  public static final short TXT_LANG_TITLE = 2;
+  public static final short TXT_MSG_NOT_SENT = 3;
+  public static final short TXT_CALLING_NR = 4;
+  public static final short TXT_INVALID_NR = 5;
+  public static final short MNU_STK_MENU = 6;
+  public static final short MNU_DIAL = 7;
+  public static final short GI_ENTER_NR = 8;
+  public static final short MNU_PHONEBOOK = 9;
+  public static final short MNU_BALANCE = 10;
+  public static final short MNU_RECHARGE = 11;
+  public static final short MNU_LANGUAGE = 12;
+  public static final short MNU_UP = 13;
+  public static final short MNU_DOWN = 14;
+  public static final short TXT_WELCOME = 15;
+  public static final short TXT_MENU_UNAVAILABLE = 16;
+  public static final short TXT_PHONEBOOK_NOT_AVAILABLE = 17;
+
+  //added for purposes of Custom Call Menus
+  public static final short GI_ENTER_VOUCHER_CODE = 18;
+  public static final short MNU_LAST_DIALED_NUMBERS = 19;
+  public static final short MNU_HOTLINE = 20;
+  public static final short MNU_RECHARGE_VOUCHER = 21; 
+  
+  /* LIST OF DEFAULT(ENGLISH) TEXT MESSAGES */
+  /** EMPTY TEXT */
+  public static final byte[] DEFAULT_TEXT_EMPTY = new byte[]{
+    (byte)'t', (byte)'e', (byte)'x', (byte)'t', (byte)' ', (byte)'n', (byte)'r',
+    (byte)':', (byte)'1', (byte)' ', (byte)'i', (byte)'s', (byte)' ', (byte)'e',
+    (byte)'m', (byte)'p', (byte)'t', (byte)'y', (byte)'!'
+  };   
+  
+  /** LV (txt_LanguageTitle) */
+  public static final byte[] DEFAULT_TEXT_LANGUAGE_TITLE = new byte[]{
+    (byte)'E', (byte)'n', (byte)'g', (byte)'l', (byte)'i', (byte)'s', (byte)'h'
+  }; 
+  
+  /** LV (txt_MsgNotSent) */
+  public static final byte[] DEFAULT_TEXT_MSG_NOT_SENT = new byte[]{
+    (byte)'M', (byte)'e', (byte)'s', (byte)'s', (byte)'a', (byte)'g', (byte)'e',
+    (byte)' ', (byte)'n', (byte)'o', (byte)'t', (byte)' ', (byte)'s', (byte)'e',
+    (byte)'n', (byte)'t'
+  }; 
+  
+  /** LV (txt_CallingNr) */
+  public static final byte[] DEFAULT_TEXT_CALLING_NO = new byte[]{
+    (byte)'C', (byte)'a', (byte)'l', (byte)'l', (byte)'i', (byte)'n', (byte)'g',
+    (byte)' ', (byte)'n', (byte)'u', (byte)'m', (byte)'b', (byte)'e', (byte)'r'
+  }; 
+  
+  /** LV (txt_InvalidNr) */
+  public static final byte[] DEFAULT_TEXT_INVALID_NO = new byte[]{
+    (byte)'I', (byte)'n', (byte)'v', (byte)'a', (byte)'l', (byte)'i', (byte)'d',
+    (byte)' ', (byte)'n', (byte)'u', (byte)'m', (byte)'b', (byte)'e', (byte)'r'
+  };
+  
+  /** LV(mnu_STKMenu) */
+  public static final byte[] DEFAULT_TEXT_MENU_STK = new byte[]{
+    (byte)'S', (byte)'T', (byte)'K', (byte)' ', (byte)'m', (byte)'e', (byte)'n', (byte)'u'
+  };
+  
+  /** LV(mnu_Dial) */
+  public static final byte[] DEFAULT_TEXT_MENU_DIAL = new byte[]{
+    (byte)'D', (byte)'i', (byte)'a', (byte)'l'
+  };
+  
+  /** LV(gi_ EnterNr) */
+  public static final byte[] DEFAULT_TEXT_ENTER_NO = new byte[]{
+    (byte)'E', (byte)'n', (byte)'t', (byte)'e', (byte)'r', (byte)' ', (byte)'n', (byte)'o', (byte)':'
+  }; 
+  
+  /** LV(gi_ EnterPIN) */
+  public static final byte[] DEFAULT_TEXT_ENTER_VOUCHER_CODE = new byte[]{
+    (byte)'E', (byte)'n', (byte)'t', (byte)'e', (byte)'r', (byte)' ', (byte)'v', (byte)'o', (byte)'u', 
+    (byte)'c', (byte)'h', (byte)'e', (byte)'r', (byte)' ', (byte)'c', (byte)'o', (byte)'d', (byte)'e'
+  }; 
+  
+  /** LV(mnu_Phonebook) */
+  public static final byte[] DEFAULT_TEXT_MENU_PHONEBOOK = new byte[]{
+    (byte)'P', (byte)'h', (byte)'o', (byte)'n', (byte)'e', (byte)'b', (byte)'o', (byte)'o', (byte)'k'
+  };
+  
+  /** LV(mnu_LastDialedNumbers) */
+  public static final byte[] DEFAULT_TEXT_LAST_DIALED_NUMBERS = new byte[]{
+    (byte)'L', (byte)'a', (byte)'s', (byte)'t', (byte)' ', (byte)'d', (byte)'i', (byte)'a', 
+    (byte)'l', (byte)'e', (byte)'d'
+  };
+  
+  /** LV(mnu_Balance) */
+  public static final byte[] DEFAULT_TEXT_MENU_BALANCE = new byte[]{
+    (byte)'B', (byte)'a', (byte)'l', (byte)'a', (byte)'n', (byte)'c', (byte)'e'
+  };
+  
+  /** LV(mnu_Recharge) */
+  public static final byte[] DEFAULT_TEXT_MENU_RECHARGE = new byte[]{
+    (byte)'R', (byte)'e', (byte)'c', (byte)'h', (byte)'a', (byte)'r', (byte)'g', (byte)'e'
+  };  
+  
+  /** LV(mnu_Hotline) */
+  public static final byte[] DEFAULT_TEXT_MENU_HOTLINE = new byte[]{
+    (byte)'H', (byte)'o', (byte)'t', (byte)'l', (byte)'i', (byte)'n', (byte)'e'
+  };  
+  
+  /** LV(mnu_RechargeVoucher) */
+  public static final byte[] DEFAULT_TEXT_MENU_RECHARGE_VOUCHER = new byte[]{
+    (byte)'R', (byte)'e', (byte)'c', (byte)'h', (byte)'a', (byte)'r', (byte)'g', (byte)'e',
+    (byte)'-', (byte)'v', (byte)'o', (byte)'u', (byte)'c', (byte)'h', (byte)'e', (byte)'r'
+  };  
+  
+  /** LV(mnu_PhonebookUnavailable) */
+  public static final byte[] DEFAULT_TEXT_PHONEBOOK_NOT_AVAILABLE = new byte[]{
+    (byte)'P', (byte)'h', (byte)'o', (byte)'n', (byte)'e', (byte)'b', (byte)'o', (byte)'o',
+    (byte)'k', (byte)' ', (byte)'u', (byte)'n', (byte)'a', (byte)'v', (byte)'a', (byte)'i',
+    (byte)'l', (byte)'a', (byte)'b', (byte)'l', (byte)'e'
+  }; 
+  
+  /** LV(mnu_MenuUnavailable) */
+  public static final byte[] DEFAULT_TEXT_MENU_NOT_AVAILABLE = new byte[]{
+    (byte)'M', (byte)'e', (byte)'n', (byte)'u', (byte)' ', (byte)'u', (byte)'n', (byte)'a', 
+    (byte)'v', (byte)'a', (byte)'i', (byte)'l', (byte)'a', (byte)'b', (byte)'l', (byte)'e'
+  }; 
+  
+  /** LV(mnu_Language) */
+  public static final byte[] DEFAULT_TEXT_MENU_LANGUAGE = new byte[]{
+    (byte)'L', (byte)'a', (byte)'n', (byte)'g', (byte)'u', (byte)'a', (byte)'g', (byte)'e', 
+  };  
+  
+  /** LV(txt_Welcome) */
+  public static final byte[] DEFAULT_TEXT_WELCOME = new byte[]{
+    (byte)'W', (byte)'e', (byte)'l', (byte)'c', (byte)'o', (byte)'m', (byte)'e',
+    (byte)' ', (byte)'t', (byte)'o', (byte)' ', (byte)'U', (byte)'n', (byte)'i',
+    (byte)'t', (byte)'e', (byte)'d', (byte)' ', (byte)'M', (byte)'o', (byte)'b',
+    (byte)'i', (byte)'l', (byte)'e'
+  };
+  
+  /** LV(mnu_Up) */
+  public static final byte[] DEFAULT_TEXT_MENU_UP = new byte[]{
+    (byte)'U', (byte)'p'
+  };
+  
+  /** LV(mnu_Down) */
+  public static final byte[] DEFAULT_TEXT_MENU_DOWN = new byte[]{
+    (byte)'D', (byte)'o', (byte)'w', (byte)'n'
+  };
+}

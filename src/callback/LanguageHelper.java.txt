@@ -1,0 +1,324 @@
+package callback;
+
+import javacard.framework.JCSystem;
+import javacard.framework.Util;
+import sim.access.SIMSystem;
+import sim.access.SIMView;
+import sim.access.SIMViewException;
+
+/**
+ * This class contains utility methods for accessing texts from different
+ * language files. <p/> 
+ * 
+ * Created on: 2008-10-16 <br/>
+ * 
+ * @author Artur Witek
+ */
+public class LanguageHelper implements LanguageTexts, LanguageSupport {
+  
+  /** 
+   * The name of the file storing additional configuration for the languages. 
+   * This file should contain: 1st byte - nr of all languages, 2nd byte - nr of texts is a language file.
+   */
+  private static final short FILE_ID_LANGUAGES_CONFIG = (short)0x6C03;
+  
+  /** Default number of records in language file. */
+  private static final short DEFAULT_LANG_RECORDS_IN_LANG_FILE = 21; //1 empty, 2-15 standard, 18-21-additional & custom
+
+  /** Stores default number of language files */
+  private static final short DEFAULT_NUMBER_OF_LANGUAGES = 8;
+  
+  /** MMI Available languages file ID. */
+  private static final short FILE_ID_AVAILABLE_LANGUAGES = (short)0x6A00;
+
+  /** Stores the callback directory id on the SIM card. */
+  private static final short FILE_ID_CALLBACK_DIR = (short)0x7F9A;
+
+  /** Stores the language file id prefix used to construct particular language file id.*/
+  private static final short LANGUAGE_FILE_ID_PREFIX = (short)0x6B00; 
+  
+  /** Holds the selected language file id**/
+  private short selectedLanguageFileId = (short)0x0000;
+  
+  /** 
+   * SIM access interface to the language configuration files. 
+   * NOTE: This variable can be reused. 
+   */
+  private SIMView gsmFile;
+  
+  /** Temporary buffer for storing intermediate data and results */
+  private byte[] tempBuffer;
+  
+  /**
+   * Public constructor, initializes the global variables.
+   */
+  public LanguageHelper() {
+    super();
+    // Get the GSM application reference
+    gsmFile = SIMSystem.getTheSIMView();
+    tempBuffer = JCSystem.makeTransientByteArray((short) 128,
+        JCSystem.CLEAR_ON_RESET);
+  }
+
+  /* (non-Javadoc)
+   * @see callback.LanguageSupport#readText(short)
+   */
+  public short readText(short textNo, byte[] dest, short destOffset) throws LanguageException {
+    //start with reseting previous buffers data
+    Utils.resetBuffer(tempBuffer);
+    
+    //check if the text number is valid.
+    if (textNo > getNumberOfTexts()) {
+      throw new LanguageException(
+          LanguageException.CODE_LANGUAGE_TEXT_NUMBER_INVALID);
+    }
+    
+    //check if language was selected
+    if(selectedLanguageFileId == (short)0x0000) {
+      throw new LanguageException(LanguageException.CODE_NO_LANGUAGE_SELECTED);
+    }
+
+    //then try to access the text from the file.
+    try {
+      //read offset of the provided text    
+      short offsetStart = (short)((short)(textNo * (short)2) - (short)2);
+      short offsetEnd = (short)(offsetStart + (short)1);
+    
+      //makes sure the selected language file is opened.
+      openSelectedLanguageFile();
+      
+      //count offset 
+      Utils.resetBuffer(tempBuffer);
+      gsmFile.readBinary(offsetStart, tempBuffer,(short) 0, (short)2); //*note, offset length is fixed and set to 2 bytes.
+      short offset = Util.getShort(tempBuffer, (short)0);    
+      
+      //read the text length (the first byte starting from the offset is the text length)  
+      Utils.resetBuffer(tempBuffer);
+      gsmFile.readBinary(offset, tempBuffer,(short) 0, (short)1);
+      short textLength = tempBuffer[0];
+      //read the text (from offset to textLength)
+      gsmFile.readBinary( (short)(offset + 1), dest, (short) destOffset, textLength);
+      return textLength;
+    } catch (LanguageException ex) {
+      throw ex;
+    } catch (Throwable ex) {
+      //get the default text
+      return getDefaultText(textNo, dest, destOffset);
+    }
+    
+    /* 
+       TODO temporarily commented for testing purposes - 
+       language files don't contain all texts as declared in additional language configuration file.
+       UNCOMMENT THAT WHEN FULL CONFIG DATA IS AVAILABLE
+       
+    } catch (SIMViewException ex) {
+      //get the default text
+      return getDefaultText(textNo, dest, destOffset);
+    } catch (ArrayIndexOutOfBoundsException e) {
+      throw new LanguageException(LanguageException.CODE_LANGUAGE_FILE_INCONSISTENT);
+    } catch (Throwable e) {
+      throw new LanguageException(LanguageException.CODE_LANGUAGE_TEXT_INACCESSIBLE);
+    }
+    */
+    
+  }
+
+  /**
+   * Gets the default language text title and sets the readText and textLength
+   * variables accordingly.
+   * 
+   * @param textNo
+   *          text No to read starting from 1.
+   * @param dest destination array.
+   * @param destOffset destination array offset.  
+   * @return text length.       
+   */
+  private short getDefaultText(short textNo, byte[] dest, short destOffset) {
+    byte[] defaultText = getDefaultLanguageTitle(textNo);
+    Util.arrayCopyNonAtomic(defaultText, (short)0, dest, (short)destOffset, (short)defaultText.length);
+    return (short)defaultText.length;
+  }
+
+  /**
+   * Gets the default text for given number.
+   * 
+   * @param textNo text number to obtain, starting from 1.
+   * @return text value.
+   * @throws LanguageException if text number is invalid (exceeded no of default lang texts = 14).
+   */
+  private byte[] getDefaultLanguageTitle(short textNo) throws LanguageException {
+    switch (textNo) {
+    case 1:
+      return DEFAULT_TEXT_EMPTY;
+    case TXT_LANG_TITLE:
+      return DEFAULT_TEXT_LANGUAGE_TITLE;
+    case TXT_MSG_NOT_SENT:
+      return DEFAULT_TEXT_MSG_NOT_SENT;
+    case TXT_CALLING_NR:
+      return DEFAULT_TEXT_CALLING_NO;
+    case TXT_INVALID_NR:
+      return DEFAULT_TEXT_INVALID_NO;
+    case MNU_STK_MENU:
+      return DEFAULT_TEXT_MENU_STK;
+    case MNU_DIAL:
+      return DEFAULT_TEXT_MENU_DIAL;
+    case GI_ENTER_NR:
+      return DEFAULT_TEXT_ENTER_NO;
+    case MNU_PHONEBOOK:
+      return DEFAULT_TEXT_MENU_PHONEBOOK;
+    case MNU_BALANCE:
+      return DEFAULT_TEXT_MENU_BALANCE;
+    case MNU_RECHARGE:
+      return DEFAULT_TEXT_MENU_RECHARGE;
+    case MNU_LANGUAGE:
+      return DEFAULT_TEXT_MENU_LANGUAGE;
+    case MNU_UP:
+      return DEFAULT_TEXT_MENU_UP;
+    case MNU_DOWN:
+      return DEFAULT_TEXT_MENU_DOWN;
+    case TXT_WELCOME:
+      return DEFAULT_TEXT_WELCOME;
+    case TXT_MENU_UNAVAILABLE:
+      return DEFAULT_TEXT_MENU_NOT_AVAILABLE;
+    case TXT_PHONEBOOK_NOT_AVAILABLE:
+      return DEFAULT_TEXT_PHONEBOOK_NOT_AVAILABLE;      
+    //custom
+    case MNU_HOTLINE:
+      return DEFAULT_TEXT_MENU_HOTLINE;      
+    case MNU_RECHARGE_VOUCHER:
+      return DEFAULT_TEXT_MENU_RECHARGE_VOUCHER;
+    case GI_ENTER_VOUCHER_CODE:
+      return DEFAULT_TEXT_ENTER_VOUCHER_CODE;
+    case MNU_LAST_DIALED_NUMBERS:
+      return DEFAULT_TEXT_LAST_DIALED_NUMBERS;
+    }
+    throw new LanguageException(LanguageException.CODE_LANGUAGE_TEXT_NUMBER_INVALID);
+  }
+  
+  /* (non-Javadoc)
+   * @see callback.LanguageSupport#getNumberOfTexts()
+   */
+  public short getNumberOfTexts() throws LanguageException {
+    try {
+      gsmFile.select(SIMView.FID_MF); // select main dir
+      gsmFile.select(FILE_ID_CALLBACK_DIR); // select the callback dir
+      gsmFile.select(FILE_ID_LANGUAGES_CONFIG); // select the language records config file
+      
+      Utils.resetBuffer(tempBuffer);
+      gsmFile.readBinary((short)1, tempBuffer, (short)0, (short)1); //read only 1 byte of the file
+      return (short)tempBuffer[0];
+      
+    } catch (SIMViewException e) {
+      if(e.getReason() == SIMViewException.FILE_NOT_FOUND) {
+        return DEFAULT_LANG_RECORDS_IN_LANG_FILE;
+      } else {
+        throw new LanguageException(LanguageException.CODE_ADDITIONAL_LANGUAGE_CONFIG_ERROR);
+      }
+    }
+  }
+  
+  /* (non-Javadoc)
+   * @see callback.LanguageSupport#getNumberOfLanguages()
+   */
+  public short getNumberOfLanguages() throws LanguageException {
+    try {
+      gsmFile.select(SIMView.FID_MF); // select main dir
+      gsmFile.select(FILE_ID_CALLBACK_DIR); // select the callback dir
+      gsmFile.select(FILE_ID_LANGUAGES_CONFIG); // select the language records config file
+      
+      Utils.resetBuffer(tempBuffer);
+      gsmFile.readBinary((short)0, tempBuffer, (short)0, (short)1); //read only 1 byte of the file
+      return (short)tempBuffer[0];
+      
+    } catch (SIMViewException e) {
+      if(e.getReason() == SIMViewException.FILE_NOT_FOUND) {
+        return DEFAULT_NUMBER_OF_LANGUAGES;
+      } else {
+        throw new LanguageException(LanguageException.CODE_ADDITIONAL_LANGUAGE_CONFIG_ERROR);
+      }
+    }
+  }
+  
+  /* (non-Javadoc)
+   * @see callback.LanguageSupport#setLanguage(short)
+   */
+  public void setLanguage(short languageId) throws LanguageException {
+    this.selectedLanguageFileId = languageId;
+    openSelectedLanguageFile();
+  }
+  
+  /**
+   * Sets the language to be used for opening the appropriate file with texts.
+   * 
+   * @param languageId language identifier i.e language file id on the SIM card.
+   * @throws LanguageException if the language file for the given id does not exist.
+   */
+  private void openSelectedLanguageFile() throws LanguageException {
+    try {
+      gsmFile.select(SIMView.FID_MF); // select main dir
+      gsmFile.select(FILE_ID_CALLBACK_DIR); // select the callback dir
+      gsmFile.select(selectedLanguageFileId); // select the appropriate language file
+    } catch (SIMViewException ex) {
+      throw new LanguageException(LanguageException.CODE_LANGUAGE_UNAVAILABLE);
+    }
+  }
+
+  /* (non-Javadoc)
+   * @see callback.LanguageSupport#getLanguageTitle(short)
+   */
+  public short readLanguageTitle(short langNo, byte[] dest, short destOffset) throws LanguageException {
+    short noOfLanguages = getNumberOfLanguages();
+    if( langNo <= (short)0 || langNo > noOfLanguages ) {
+      throw new LanguageException(LanguageException.CODE_LANGUAGE_UNAVAILABLE);
+    }
+    
+    //prepare buffer to read the file into
+    Utils.resetBuffer(tempBuffer);
+    
+    //open the languages file
+    gsmFile.select(SIMView.FID_MF);
+    gsmFile.select(FILE_ID_CALLBACK_DIR); // select the callback dir
+    gsmFile.select(FILE_ID_AVAILABLE_LANGUAGES);  // select the languages file
+
+    //read languages file
+    gsmFile.readBinary((short)0, tempBuffer, (short)0, noOfLanguages);
+    
+    short fileId = (short)(LANGUAGE_FILE_ID_PREFIX + tempBuffer[(short)(langNo - (short)1)]);
+    
+    //temporarily change language
+    short originalLangFileId = this.selectedLanguageFileId;
+    try {
+      setLanguage(fileId);
+      //read the text
+      return readText((short)2, dest, destOffset); //language name is the second record in the language file
+    } finally {
+      //restore back the selected language
+      setLanguage(originalLangFileId);
+      //return the read text
+    }
+  }
+  
+  /* (non-Javadoc)
+   * @see callback.LanguageSupport#getLanguageId(short)
+   */
+  public short getLanguageId(short langNo) throws LanguageException {
+    short noOfLanguages = getNumberOfLanguages();
+    if( langNo <= 0 || langNo > noOfLanguages ) {
+      throw new LanguageException(LanguageException.CODE_LANGUAGE_UNAVAILABLE);
+    }
+    
+    //open the languages file
+    gsmFile.select(SIMView.FID_MF);
+    gsmFile.select(FILE_ID_CALLBACK_DIR); // select the callback dir
+    gsmFile.select(FILE_ID_AVAILABLE_LANGUAGES);  // select the languages file
+
+    //prepare buffer to read the file into
+    Utils.resetBuffer(tempBuffer);
+    
+    //read languages file
+    gsmFile.readBinary((short)0, tempBuffer, (short)0, noOfLanguages);
+    
+    return (short)(LANGUAGE_FILE_ID_PREFIX + tempBuffer[(short)(langNo-((short)1))]);
+  }
+
+}

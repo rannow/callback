@@ -1,0 +1,57 @@
+package callback;
+
+/**
+ * Thrown when there was some problems while performing operations on languages.
+ * <p/>
+ * Created on: 2008-10-16 <b/>
+ * 
+ * @author Artur Witek
+ */
+public class LanguageException extends RuntimeException {
+
+  /**
+   * Requested language file could be found.
+   */
+  public static final short CODE_LANGUAGE_UNAVAILABLE = (short) 1;
+  
+  /**
+   * Requested language text could not be obtained due to the file inconsistency
+   * with the number of texts declared in the additional language config file.
+   */
+  public static final short CODE_LANGUAGE_FILE_INCONSISTENT = (short) 2;
+  
+  /**
+   * Requested language text number is invalid.
+   */
+  public static final short CODE_LANGUAGE_TEXT_NUMBER_INVALID = (short) 3;  
+  
+  /**
+   * No language selected.
+   */
+  public static final short CODE_NO_LANGUAGE_SELECTED = (short) 4;   
+  
+  /**
+   * Some problems with additional language configuration file occured.
+   */
+  public static final short CODE_ADDITIONAL_LANGUAGE_CONFIG_ERROR = (short) 5;   
+  
+  /**
+   * Some problems with reading language text occurred.
+   */
+  public static final short CODE_LANGUAGE_TEXT_INACCESSIBLE = (short) 6; 
+  
+  private short code;
+  
+  public LanguageException(short code) {
+    super();
+    this.code = code;
+  }
+
+  /**
+   * @return the code
+   */
+  public short getCode() {
+    return code;
+  }
+  
+}

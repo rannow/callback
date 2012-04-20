@@ -1,0 +1,118 @@
+;------------------------------------------------------
+;Authentication
+;------------------------------------------------------
+$NAME "Verify PIN [1234]"
+$CMD 0XA0 0X20 0X00 0X01   $LI 8   $LE 0
+   $DI 0X31 0X32 0X33 0X34 0XFF 0XFF 0XFF 0XFF     REM 1234....
+
+$NAME "Verify ADM2 [ADM_AUTH]"
+$CMD 0XA0 0X20 0X00 0X0B   $LI 8   $LE 0
+   $DI 0X41 0X44 0X4D 0X5F 0X41 0X55 0X54 0X48     REM ADM_AUTH
+
+;------------------------------------------------------
+;Create DF
+;------------------------------------------------------
+$NAME "Select MF [3F 00]"
+$CMD 0XA0 0XA4 0X00 0X00   $LI 2   $LE 0
+   $DI 0X3F 0X00                                   REM ?.
+
+$NAME "Create DF 7F9A"
+$CMD 0XA0 0XE0 0X00 0X00 $LI    16 $LE     0
+   $DI 0X85 0X0E 0X00 0X00 0X7F 0X9A 0X10 0X00   REM …...A..
+   $DI 0X00 0X00 0X01 0X00 0X03 0X01 0X00 0X00   REM ........
+
+;------------------------------------------------------
+; Create Files in 7F 9A
+;------------------------------------------------------
+$NAME "Select DF [7F 9A]"
+$CMD 0XA0 0XA4 0X00 0X00   $LI 2   $LE 0
+   $DI 0X7F 0X9A                                 REM .
+
+$NAME "Create EF 6FA0 Transparent 200 Byte"
+$CMD 0XA0 0XE0 0X00 0X00   $LI 16   $LE 0
+   $DI 0X85 0X0E 0X00 0XC8 0X6F 0XA0 0X00 0X00     REM ....O...
+   $DI 0X01 0X01 0X01 0X11 0X03 0X01 0X01 0X01     REM ........
+$SW 0X9000   $LO 0
+
+$NAME "Select DF [6F A0]"
+$CMD 0XA0 0XA4 0X00 0X00   $LI 2   $LE 0
+   $DI 0X6F 0XA0                                 REM .
+
+$NAME "Update DF [6F A0]"
+$CMD 0XA0 0XD6 0X00 0X00   $LI 100   $LE 0
+$DI 0X87 0X00 0X2C 0X00 0X2C 0X00 0X00 0X00
+$DI 0X2C 0X00 0X08 0X00 0X34 0X00 0X07 0X00
+$DI 0X3B 0X00 0X05 0X00 0X40 0X00 0X01 0X00
+$DI 0X41 0X00 0X05 0X00 0X46 0X00 0X0B 0X00
+$DI 0X51 0X00 0X0B 0X00 0X5C 0X00 0X08 0X00
+$DI 0X00 0X04 0X07 0X01 0X0C 0X91 0X24 0X63
+$DI 0X15 0X00 0X10 0X00 0X91 0X13 0X56 0X04
+$DI 0X49 0X60 0X30 0X2A 0X31 0X32 0X34 0X2A
+$DI 0X23 0X2A 0X31 0X32 0X35 0X23 0X00 0X03
+$DI 0X00 0XF0 0X00 0X62 0XF2 0X10 0X72 0XF2
+$DI 0X10 0X00 0X02 0X03 0X34 0X34 0X33 0X00
+$DI 0X02 0X31 0X31 0X01 0X02 0X02 0X30 0X30
+$DI 0X03 0X30 0X31 0X31
+
+;------------------------------------------------------
+; Create Files for Phonebook ADN, LND
+;------------------------------------------------------
+$NAME "Select DF [7F 10]"
+$CMD 0XA0 0XA4 0X00 0X00   $LI 2   $LE 0
+   $DI 0X7F 0X10                                 REM .
+
+$NAME "Create EF 6F3A Linear Fix 30 Byte x 10 Records ADN"
+$CMD 0XA0 0XE0 0X00 0X00   $LI 16   $LE 0
+   $DI 0X85 0X0E 0X1E 0X0A 0X6F 0X3A 0X01 0X00     REM ....O...
+   $DI 0X01 0X01 0X01 0X11 0X03 0X01 0X01 0X01     REM ........
+$SW 0X9000   $LO 0
+
+$NAME "Select DF [6F 3A]"
+$CMD 0XA0 0XA4 0X00 0X00   $LI 2   $LE 0
+   $DI 0X6F 0X3A                                 REM .
+
+$NAME "Update DF [6F 3A] Record 1"
+$CMD 0XA0 0XDC 0X01 0X04   $LI 28   $LE 0
+ $DI 0X48 0X6F 0X74 0X6C 0X69 0X6E 0X65 0XFF
+ $DI 0XFF 0XFF 0XFF 0XFF 0XFF 0XFF 0X03 0X81
+ $DI 0X22 0XF2 0XFF 0XFF 0XFF 0XFF 0XFF 0XFF
+ $DI 0XFF 0XFF 0XFF 0XFF
+ 
+$NAME "Update DF [6F 3A] Record 2"
+$CMD 0XA0 0XDC 0X02 0X04   $LI 28   $LE 0
+ $DI 0X48 0X6F 0X6C 0X67 0X65 0X72 0XFF 0XFF
+ $DI 0XFF 0XFF 0XFF 0XFF 0XFF 0XFF 0X0C 0X91
+ $DI 0X94 0X71 0X49 0X39 0X80 0X84 0XFF 0XFF
+ $DI 0XFF 0XFF 0XFF 0XFF
+
+$NAME "Create EF 6F44 Linear Fix 30 Byte x 10 Records LND"
+$CMD 0XA0 0XE0 0X00 0X00   $LI 16   $LE 0
+   $DI 0X85 0X0E 0X1E 0X0A 0X6F 0X44 0X01 0X00     REM ....O...
+   $DI 0X01 0X01 0X01 0X11 0X03 0X01 0X01 0X01     REM ........
+$SW 0X9000   $LO 0
+
+$NAME "Select DF [6F 44]"
+$CMD 0XA0 0XA4 0X00 0X00   $LI 2   $LE 0
+   $DI 0X6F 0X44                                 REM .
+
+$NAME "Update DF [6F 44] Record 1"
+$CMD 0XA0 0XDC 0X01 0X04   $LI 28   $LE 0
+ $DI 0X48 0X6F 0X6C 0X67 0X65 0X72 0XFF 0XFF
+ $DI 0XFF 0XFF 0XFF 0XFF 0XFF 0XFF 0X0C 0X91
+ $DI 0X94 0X71 0X49 0X39 0X80 0X84 0XFF 0XFF
+ $DI 0XFF 0XFF 0XFF 0XFF
+
+$NAME "Update DF [6F 44] Record 2"
+$CMD 0XA0 0XDC 0X02 0X04   $LI 28   $LE 0
+ $DI 0XFF 0XFF 0XFF 0XFF 0XFF 0XFF 0XFF 0XFF
+ $DI 0XFF 0XFF 0XFF 0XFF 0XFF 0XFF 0X0E 0X81
+ $DI 0X00 0X94 0X71 0X49 0X39 0X80 0X84 0XFF
+ $DI 0XFF 0XFF 0XFF 0XFF
+			
+;------------------------------------------------------
+; End
+;------------------------------------------------------
+$NAME "Select MF [3F 00] (release EF 4F99)"
+$CMD 0XA0 0XA4 0X00 0X00   $LI 2   $LE 0
+   $DI 0X3F 0X00                                   REM ?.
+
